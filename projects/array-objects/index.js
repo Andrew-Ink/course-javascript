@@ -43,17 +43,16 @@ function map(array, fn) {
  */
 function reduce(array, fn, initial) {
   let sum = '';
+  let start = 0;
   if (initial !== undefined) {
     sum = initial;
-    for (let i = 0; i < array.length; i++) {
-      sum = fn(sum, array[i], i, array);
-    }
   }
   if (initial === undefined) {
     sum = array[0];
-    for (let i = 1; i < array.length; i++) {
-      sum = fn(sum, array[i], i, array);
-    }
+    start = 1;
+  }
+  for (let i = start; i < array.length; i++) {
+    sum = fn(sum, array[i], i, array);
   }
   return sum;
 }
@@ -67,14 +66,7 @@ function reduce(array, fn, initial) {
    upperProps({ name: 'Сергей', lastName: 'Петров' }) вернет ['NAME', 'LASTNAME']
  */
 function upperProps(obj) {
-  const arrayKeyUpperCase = [];
-  // for (let i = 0; i < Object.keys(obj).length; i++) {
-  //   arrayKeyUpperCase[i] = Object.keys(obj)[i].toUpperCase();
-  // }
-  for (const key in obj) {
-    arrayKeyUpperCase.push(key.toUpperCase());
-  }
-  return arrayKeyUpperCase;
+  return Object.keys(obj).map((key) => key.toUpperCase());
 }
 
 /*
@@ -91,8 +83,7 @@ function upperProps(obj) {
 function createProxy(obj) {
   const proxy = new Proxy(obj, {
     set(obj, prop, val) {
-      val = val ** 2;
-      obj[prop] = val;
+      obj[prop] = val ** 2;
       return true;
     },
   });
