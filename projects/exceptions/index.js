@@ -16,25 +16,51 @@
    isAllTrue([1, 2, 3, 4, 5], n => n < 10) // вернет true
    isAllTrue([100, 2, 3, 4, 5], n => n < 10) // вернет false
  */
-function isAllTrue(array, fn) {}
+function isAllTrue(array, fn) {
+  if (array.constructor.name !== 'Array' || array.length === 0) {
+    throw new Error('empty array');
+  }
+  if (typeof fn !== 'function') {
+    throw new Error('fn is not a function');
+  }
+  for (const key of array) {
+    if (!fn(key)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 /*
- Задание 2:
+Задание 2:
 
- 2.1: Функция принимает массив и фильтрующую функцию и должна вернуть true или false
- Функция должна вернуть true если fn вернула true хотя бы для одного из элементов массива
+2.1: Функция принимает массив и фильтрующую функцию и должна вернуть true или false
+Функция должна вернуть true если fn вернула true хотя бы для одного из элементов массива
 
- 2.2: Необходимо выбрасывать исключение в случаях:
-   - array не массив или пустой массив (с текстом "empty array")
-   - fn не является функцией (с текстом "fn is not a function")
+2.2: Необходимо выбрасывать исключение в случаях:
+ - array не массив или пустой массив (с текстом "empty array")
+ - fn не является функцией (с текстом "fn is not a function")
 
- Запрещено использовать встроенные методы для работы с массивами
+Запрещено использовать встроенные методы для работы с массивами
 
- Пример:
-   isSomeTrue([1, 2, 30, 4, 5], n => n > 20) // вернет true
-   isSomeTrue([1, 2, 3, 4, 5], n => n > 20) // вернет false
- */
-function isSomeTrue(array, fn) {}
+Пример:
+ isSomeTrue([1, 2, 30, 4, 5], n => n > 20) // вернет true
+ isSomeTrue([1, 2, 3, 4, 5], n => n > 20) // вернет false
+*/
+function isSomeTrue(array, fn) {
+  if (array.constructor.name !== 'Array' || array.length === 0) {
+    throw new Error('empty array');
+  }
+  if (typeof fn !== 'function') {
+    throw new Error('fn is not a function');
+  }
+  for (const key of array) {
+    if (fn(key)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 /*
  Задание 3:
@@ -47,7 +73,23 @@ function isSomeTrue(array, fn) {}
  3.3: Необходимо выбрасывать исключение в случаях:
    - fn не является функцией (с текстом "fn is not a function")
  */
-function returnBadArguments(fn, ...args) {}
+function returnBadArguments(fn, ...args) {
+  if (typeof fn !== 'function') {
+    throw new Error('fn is not a function');
+  }
+  if (args.length === 0) {
+    return [];
+  }
+  const result = [];
+  for (const val of args) {
+    try {
+      fn(val);
+    } catch {
+      result.push(val);
+    }
+  }
+  return result;
+}
 
 /*
  Задание 4:
@@ -66,7 +108,44 @@ function returnBadArguments(fn, ...args) {}
    - number не является числом (с текстом "number is not a number")
    - какой-либо из аргументов div является нулем (с текстом "division by 0")
  */
-function calculator(number = 0) {}
+function calculator(number = 0) {
+  if (typeof number !== 'number') {
+    throw new Error('number is not a number');
+  }
+  return {
+    sum: (...args) => {
+      let result = number;
+      for (const val of args) {
+        result += val;
+      }
+      return result;
+    },
+    dif: (...args) => {
+      let result = number;
+      for (const val of args) {
+        result -= val;
+      }
+      return result;
+    },
+    div: (...args) => {
+      let result = number;
+      for (const val of args) {
+        if (val === 0) {
+          throw new Error('division by 0');
+        }
+        result = result / val;
+      }
+      return result;
+    },
+    mul: (...args) => {
+      let result = number;
+      for (const val of args) {
+        result = result * val;
+      }
+      return result;
+    },
+  };
+}
 
 /* При решении задач, постарайтесь использовать отладчик */
 
