@@ -116,14 +116,15 @@ function deleteTextNodes(where) {
    должно быть преобразовано в <span><div><b></b></div><p></p></span>
  */
 function deleteTextNodesRecursive(where) {
-  if (where.childNodes.length !== 0) {
-    for (let i = where.childNodes.length - 1; i >= 0; i--) {
-      deleteTextNodesRecursive(where.childNodes[i]);
+  const childs = [...where.childNodes];
+
+  for (const node of childs) {
+    if (node.nodeType === 1) {
+      deleteTextNodesRecursive(node);
     }
-  }
-  if (where.nodeType === 3) {
-    where.remove();
-    return;
+    if (node.nodeType === 3) {
+      where.removeChild(node);
+    }
   }
 }
 
@@ -147,7 +148,41 @@ function deleteTextNodesRecursive(where) {
      texts: 3
    }
  */
-function collectDOMStat(root) {}
+function collectDOMStat(root) {
+  const stat = {
+    tags: {},
+    classes: {},
+    texts: 0,
+  };
+  function statDomNodes(root) {
+    const childs = [...root.childNodes];
+    for (const node of childs) {
+      if (node.nodeType === 3) {
+        stat.texts++;
+      }
+      if (node.nodeType === 1) {
+        if (!stat.tags[`${node.tagName}`]) {
+          stat.tags[`${node.tagName}`] = 1;
+        } else {
+          stat.tags[`${node.tagName}`]++;
+        }
+        if (node.classList.value) {
+          const classArray = node.classList.value.split(' ');
+          for (const classValue of classArray) {
+            if (!stat.classes[`${classValue}`]) {
+              stat.classes[`${classValue}`] = 1;
+            } else {
+              stat.classes[`${classValue}`]++;
+            }
+          }
+        }
+        statDomNodes(node);
+      }
+    }
+    return stat;
+  }
+  return statDomNodes(root);
+}
 
 /*
  Задание 8 *:
@@ -181,7 +216,23 @@ function collectDOMStat(root) {}
      nodes: [div]
    }
  */
-function observeChildNodes(where, fn) {}
+function observeChildNodes(where, fn) {
+  const configObserver = {
+    childList: true,
+    subtree: true,
+  };
+  const observer = new MutationObserver((mutationList) => {
+    for (const item of mutationList) {
+      if (item.type === 'childList') {
+        fn({
+          type: item.removedNodes.length ? 'remove' : 'insert',
+          nodes: [...(item.removedNodes.length ? item.removedNodes : item.addedNodes)],
+        });
+      }
+    }
+  });
+  observer.observe(where, configObserver);
+}
 
 export {
   createDivWithText,
