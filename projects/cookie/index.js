@@ -45,8 +45,64 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-filterNameInput.addEventListener('input', function () {});
+let filterCookie = '';
+let cookie = {};
 
-addButton.addEventListener('click', () => {});
+filterNameInput.addEventListener('input', function () {
+  filterCookie = filterNameInput.value.toLowerCase();
+  updateTable();
+});
 
-listTable.addEventListener('click', (e) => {});
+addButton.addEventListener('click', () => {
+  const name = addNameInput.value;
+  const value = addValueInput.value;
+
+  if (name.length !== 0 && value.length !== 0) {
+    document.cookie = `${name}=${value}`;
+    addNameInput.value = '';
+    addValueInput.value = '';
+    updateTable();
+  }
+});
+
+listTable.addEventListener('click', (e) => {
+  if (e.target.dataset.cookieName) {
+    const cookieName = e.target.dataset.cookieName;
+    const cookieRemove = `${cookieName}=${cookie[cookieName]}`;
+    document.cookie = `${cookieRemove}; max-age=0`;
+    updateTable();
+  }
+});
+
+function updateTable() {
+  listTable.innerHTML = '';
+
+  cookie = document.cookie
+    .split('; ')
+    .filter(Boolean)
+    .reduce((prev, current) => {
+      const [name, value] = current.split('=');
+      prev[name] = value;
+      return prev;
+    }, {});
+
+  for (const key of Object.keys(cookie)) {
+    if (key.includes(filterCookie) || cookie[key].includes(filterCookie)) {
+      const tr = document.createElement('tr');
+
+      const tdName = document.createElement('td');
+      const tdValue = document.createElement('td');
+      const tdRemove = document.createElement('td');
+      const removeButton = document.createElement('button');
+
+      removeButton.dataset.cookieName = key;
+
+      tdRemove.append(removeButton);
+      tdName.textContent = key;
+      tdValue.textContent = cookie[key];
+      removeButton.innerText = 'удалить cookie';
+      tr.append(tdName, tdValue, tdRemove);
+      listTable.append(tr);
+    }
+  }
+}
