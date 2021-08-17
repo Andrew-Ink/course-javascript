@@ -25,8 +25,8 @@ let currentY = 0;
 
 document.addEventListener('mousemove', (e) => {
   if (currentDiv) {
-    currentDiv.style.left = e.clientX - currentX;
-    currentDiv.style.top = e.clientY - currentY;
+    currentDiv.style.left = e.clientX - currentX + 'px';
+    currentDiv.style.top = e.clientY - currentY + 'px';
   }
 });
 
@@ -54,6 +54,7 @@ export function createDiv() {
   div.addEventListener('mouseup', () => {
     currentDiv = false;
   });
+  div.addEventListener('dragstart', () => false);
   return div;
 }
 
